@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+    http://www.springframework.org/schema/data/jpa
+    http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+    http://www.springframework.org/schema/task
+	http://www.springframework.org/schema/task/spring-task-4.1.xsd
+	http://www.springframework.org/schema/cache
+	http://www.springframework.org/schema/cache/spring-cache.xsd">
+	
+	<!-- 扫描包 -->
+	<context:component-scan base-package="zhku.zhou.crm"></context:component-scan>
+	<!-- 支持springmvc的注解 -->
+	<!-- 
+		如果使用了<mvc:annotation-driven />， 
+		它会自动注册DefaultAnnotationHandlerMapping 与AnnotationMethodHandlerAdapter 这两个bean,
+		所以就没有机会再给它注入interceptors属性，就无法指定拦截器。 
+		DefaultAnnotationHandlerMapping -> org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping 
+		AnnotationMethodHandlerAdapter -> org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter 
+		AnnotationMethodHandlerExceptionResolver -> ExceptionHandlerExceptionResolver 
+	-->
+	<mvc:annotation-driven></mvc:annotation-driven>
+	<!-- 视图解析器 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+	<!-- 加载properties -->
+	<context:property-placeholder location="classpath:jdbc.properties"/>
+	<!-- druid数据连接池 -->
+	<bean id="druidDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+		<property name="url" value="${datasource.url}"></property>
+		<property name="username" value="${datasource.username}"></property>
+		<property name="password" value="${datasource.password}"></property>
+		<property name="driverClassName" value="${datasource.driver-class-name}"></property>
+		<property name="initialSize" value="${datasource.druid.initialSize}"></property>
+		<property name="minIdle" value="${datasource.druid.minIdle}"></property>
+		<property name="maxActive" value="${datasource.druid.maxActive}"></property>
+		<property name="maxWait" value="${datasource.druid.maxWait}"></property>
+		<property name="timeBetweenEvictionRunsMillis" value="${datasource.druid.timeBetweenEvictionRunsMillis}"></property>
+		<property name="minEvictableIdleTimeMillis" value="${datasource.druid.minEvictableIdleTimeMillis}"></property>
+		<property name="validationQuery" value="${datasource.druid.validationQuery}"></property>
+		<property name="testWhileIdle" value="${datasource.druid.testWhileIdle}"></property>
+		<property name="testOnBorrow" value="${datasource.druid.testOnBorrow}"></property>
+		<property name="poolPreparedStatements" value="${datasource.druid.poolPreparedStatements}"></property>
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="${datasource.druid.maxPoolPreparedStatementPerConnectionSize}"></property>
+	</bean>
+	<!-- 声明一个sqlSessionFactory -->
+	<bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="druidDataSource"></property>
+		<property name="mapperLocations">
+			<!-- 多个mapper路径用array数组 -->
+			<array>
+				<value>classpath:mapper/*.xml</value>
+				<value>classpath:myMapper/*.xml</value>
+			</array>
+		</property>
+		<property name="configLocation" value="classpath:mybatis.xml"></property>
+	</bean>
+	<!-- 配置mapper路径 -->
+	<bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="zhku.zhou.crm.dao"></property>
+	</bean>
+	<!-- 配置拦截器 -->
+	<!-- springmvc不拦截jsp文件,若要拦截,请放到WEB-INF/下 -->
+<!-- 	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/admin/**"/>
+			<mvc:exclude-mapping path="/admin/admin/login"/>
+			<bean class="zhku.zhou.park.interceptor.AdminLoginInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors> -->
+	<!-- 支持静态文件 -->
+	<mvc:default-servlet-handler/>
+</beans>

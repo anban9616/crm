@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<form action="">
+		<label>长</label>
+		<input type="text" id="x">
+		<label>宽</label>
+		<input type="text" id="y">
+		<label>斜边</label>
+		<input type="text" id="z">
+		<label>比例长</label>
+		<input type="text" id="rx">
+		<label>比例宽</label>
+		<input type="text" id="ry">
+		<label>DPI</label>
+		<input type="text" id="d">
+		<input type="button" value="提交" onclick="count()" />
+	</form>
+
+</body>
+<script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+<script type="text/javascript">
+	function count() {
+		console.log("test");
+		var x1 = $("#x").val();
+		var y1 = $("#y").val();
+		var z1 = $("#z").val();
+		var rx1 = $("#rx").val();
+		var ry1 = $("#ry").val();
+		var d1 = $("#d").val();
+		x = Number(x1);
+		y = Number(y1);
+		z = Number(z1);
+		rx = Number(rx1);
+		ry = Number(ry1);
+		d = Number(d1);
+		console.log("x:" + x);
+		console.log("y:" + y);
+		console.log("z:" + z);
+		console.log("rx:" + rx);
+		console.log("ry:" + ry);
+		console.log("d:" + d);
+		if(rx>0&&ry>0){
+			r = rx / ry;
+		}else {
+			r = 0;
+		}
+		console.log("r:" + r);
+		//rx,ry不能只一个为0
+		if ((rx <= 0 && ry > 0)||(rx > 0 && ry <= 0)) {
+			alert("比例错误");
+			return;
+		}
+		if (x == 0 && y == 0) {
+			if (z <= 0 || d <= 0 || r <= 0) {
+				alert("条件不足1");
+				return;
+			} else {
+				y = Math.sqrt((d * d * z * z) / (r * r + 1));
+				x = r * y;
+				$("#x").val(decimal(x, 1));
+				$("#y").val(decimal(y, 1));
+				return;
+			}
+		}
+		if (z <= 0) {
+			if (d <= 0) {
+				alert("条件不足2");
+				return;
+			} else if (r <= 0) {
+				if (x <= 0 || y <= 0) {
+					console.log("条件不足3");
+				} else {
+					z = (Math.sqrt(x * x + y * y) / d);
+					rx = x * 9/ y;
+					ry = 9;
+					$("#z").val(decimal(z, 1));
+					$("#rx").val(decimal(rx, 3));
+					$("#ry").val(ry);
+					return;
+				}
+			} else if (x <= 0) {
+				if (r <= 0 || y <= 0) {
+					console.log("条件不足4");
+				} else {
+					x = r * y;
+					z = (Math.sqrt(x * x + y * y) / d);
+					$("#z").val(decimal(z, 1));
+					$("#x").val(decimal(x, 1));
+					return;
+				}
+			} else if (y <= 0) {
+				if (r <= 0 || x <= 0) {
+					console.log("条件不足5");
+				} else {
+					y = x/r;
+					z = (Math.sqrt(x * x + y * y) / d);
+					$("#z").val(decimal(z, 1));
+					$("#y").val(decimal(y, 1));
+					return;
+				}
+			} else if(x>0&&y>0&&r>0){
+				z = (Math.sqrt(x * x + y * y) / d);
+				rx = x * 9/ y;
+				ry = 9;
+				$("#z").val(decimal(z, 1));
+				$("#rx").val(decimal(rx, 3));
+				$("#ry").val(ry);
+				return;
+			}
+		}
+		if (d <= 0) {
+			if (z <= 0) {
+				alert("条件不足6");
+				return;
+			} else if (r <= 0) {
+				if (x <= 0 || y <= 0) {
+					console.log("条件不足7");
+				} else {
+					d = (Math.sqrt(x * x + y * y) / z);
+					rx = x*9 / y;
+					ry = 9;
+					$("#d").val(decimal(d, 1));
+					$("#rx").val(decimal(rx, 3));
+					$("#ry").val(ry);
+					return;
+				}
+			} else if (x <= 0) {
+				if (r <= 0 || y <= 0) {
+					console.log("条件不足8");
+				} else {
+					x = r * y;
+					d = (Math.sqrt(x * x + y * y) / z);
+					$("#d").val(decimal(d, 1));
+					$("#x").val(decimal(x, 1));
+					return;
+				}
+			} else if (y <= 0) {
+				if (r <= 0 || x <= 0) {
+					console.log("条件不足9");
+				} else {
+					y = x/r;
+					d = (Math.sqrt(x * x + y * y) / z);
+					$("#d").val(decimal(d, 1));
+					$("#y").val(decimal(y, 1));
+					return;
+				}
+			} else if(x>0&&y>0&&r>0){
+				d = (Math.sqrt(x * x + y * y) / z);
+				rx = x * 9/ y;
+				ry = 9;
+				$("#d").val(decimal(d, 1));
+				$("#rx").val(decimal(rx, 3));
+				$("#ry").val(ry);
+				return;
+			}
+		}
+	}
+	function decimal(num, v) {
+		var vv = Math.pow(10, v);
+		return Math.round(num * vv) / vv;
+	}
+</script>
+</html>
